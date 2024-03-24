@@ -64,7 +64,7 @@ void Reader::pop( uint64_t len )
 {
   // Your code here.
 
-  /* 每次pop时都需要将缓冲区后一部分的所有数据位移，效率太低，应该使用环形缓冲区 */
+  /* 每次pop时都需要将缓冲区后一部分的所有数据位移，效率太低，可以选择使用环形缓冲区或c++容器deque */
   pop_count_ += len;
   memmove(buf_.data(), buf_.data() + len, next_push_pos_ - len);
   next_push_pos_ -= len;
