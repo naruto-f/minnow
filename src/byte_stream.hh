@@ -25,13 +25,13 @@ protected:
   // Please add any additional state to the ByteStream here, and not to the Writer and Reader interfaces.
   uint64_t capacity_;
   std::string buf_;
-  uint64_t start_pos {0};
-  uint64_t next_push_pos_ {0};
+  uint64_t start_pos { 0 };
+  uint64_t next_push_pos_ { 0 };
 
-  bool close_flag_ {false};
+  bool close_flag_ { false };
 
-  uint64_t push_count_ {0};
-  uint64_t pop_count_ {0};
+  uint64_t push_count_ { 0 };
+  uint64_t pop_count_ { 0 };
 
   bool error_ {};
 };

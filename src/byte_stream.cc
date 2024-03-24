@@ -3,7 +3,7 @@
 
 using namespace std;
 
-ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity ), buf_(capacity_, '\0') {}
+ByteStream::ByteStream( uint64_t capacity ) : capacity_( capacity ), buf_( capacity_, '\0' ) {}
 
 bool Writer::is_closed() const
 {
@@ -15,9 +15,9 @@ void Writer::push( string data )
 {
   // Your code here.
   uint64_t data_len = data.size();
-  uint64_t push_len = min(available_capacity(), data_len);
+  uint64_t push_len = min( available_capacity(), data_len );
 
-  memmove(buf_.data() + next_push_pos_, data.data(), push_len);
+  memmove( buf_.data() + next_push_pos_, data.data(), push_len );
   next_push_pos_ += push_len;
   push_count_ += push_len;
 
@@ -57,7 +57,7 @@ uint64_t Reader::bytes_popped() const
 string_view Reader::peek() const
 {
   // Your code here.
-  return {buf_.data(), next_push_pos_};
+  return { buf_.data(), next_push_pos_ };
 }
 
 void Reader::pop( uint64_t len )
@@ -66,20 +66,19 @@ void Reader::pop( uint64_t len )
 
   /* 每次pop时都需要将缓冲区后一部分的所有数据位移，效率太低，可以选择使用环形缓冲区或c++容器deque */
   pop_count_ += len;
-  memmove(buf_.data(), buf_.data() + len, next_push_pos_ - len);
+  memmove( buf_.data(), buf_.data() + len, next_push_pos_ - len );
   next_push_pos_ -= len;
 
-
-//  start_pos += len;
-//  pop_count_ += len;
-//  if (start_pos == next_push_pos_) {
-//    start_pos = 0;
-//    next_push_pos_ = 0;
-//  } else {
-//    memmove(buf_.data(), buf_.data() + start_pos, next_push_pos_ - start_pos);
-//    next_push_pos_ -= start_pos;
-//    start_pos = 0;
-//  }
+  //  start_pos += len;
+  //  pop_count_ += len;
+  //  if (start_pos == next_push_pos_) {
+  //    start_pos = 0;
+  //    next_push_pos_ = 0;
+  //  } else {
+  //    memmove(buf_.data(), buf_.data() + start_pos, next_push_pos_ - start_pos);
+  //    next_push_pos_ -= start_pos;
+  //    start_pos = 0;
+  //  }
 }
 
 uint64_t Reader::bytes_buffered() const
