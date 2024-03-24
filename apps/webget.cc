@@ -7,10 +7,40 @@
 
 using namespace std;
 
+//GET /hello HTTP/1.1
+//Host: cs144.keithw.org
+//Connection: close
+
+
 void get_URL( const string& host, const string& path )
 {
-  cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
-  cerr << "Warning: get_URL() has not been implemented yet.\n";
+//  cerr << "Function called: get_URL(" << host << ", " << path << ")\n";
+//  cerr << "Warning: get_URL() has not been implemented yet.\n";
+
+  TCPSocket client_socket;
+  Address addr(host, "http");
+  string recv_buff;
+
+  client_socket.connect(addr);
+
+  /* 先构造完整的报文再发送 */
+  string packet =
+    "GET " + path + " HTTP/1.1\r\n"
+    "Host: " + host + "\r\n"
+    "Connection: close\r\n"
+    "\r\n";
+  client_socket.write(packet);
+
+  /* 每次发送单句报文 */
+  //  client_socket.write("GET " + path + " HTTP/1.1\r\n");
+  //  client_socket.write("Host: " + host + "\r\n");
+  //  client_socket.write("Connection: close\r\n");
+  //  client_socket.write("\r\n");
+
+  while (!client_socket.eof()) {
+    client_socket.read(recv_buff);
+    cout << recv_buff;
+  }
 }
 
 int main( int argc, char* argv[] )
