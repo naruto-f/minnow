@@ -1,12 +1,21 @@
 #pragma once
 
 #include "byte_stream.hh"
+#include <deque>
+#include <map>
+#include <unordered_map>
+#include <vector>
+
+// auto Comp = [](std::pair<uint64_t, std::string>& lhs, std::pair<uint64_t, std::string>& rhs) {
+//   return lhs.first < rhs.first;
+// };
 
 class Reassembler
 {
 public:
   // Construct Reassembler to write into given ByteStream.
-  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ) {}
+  explicit Reassembler( ByteStream&& output ) : output_( std::move( output ) ), startpos_to_string_(), intervals_()
+  {}
 
   /*
    * Insert a new substring to be reassembled into a ByteStream.
@@ -42,4 +51,16 @@ public:
 
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
+
+  uint64_t bytes_pending_ { 0 };
+  uint64_t last_index_ { 0 };
+  bool stream_end_ { false };
+
+  uint64_t first_unpopped_pos_ { 0 };
+  uint64_t first_unassembled_pos_ { 0 };
+
+  std::unordered_map<uint64_t, std::string> startpos_to_string_;
+
+  std::deque<std::pair<uint64_t, uint64_t>> intervals_;
+  // std::map<uint64_t, std::string, decltype(Comp)> substrings;
 };
