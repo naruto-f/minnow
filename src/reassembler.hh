@@ -49,6 +49,10 @@ public:
   // Access output stream writer, but const-only (can't write from outside)
   const Writer& writer() const { return output_.writer(); }
 
+  uint64_t get_first_unassembled_pos() const { return first_unassembled_pos_; }
+
+  uint16_t window_size() const { return std::min<uint64_t>( writer().available_capacity(), UINT16_MAX ); }
+
 private:
   ByteStream output_; // the Reassembler writes to this ByteStream
 
