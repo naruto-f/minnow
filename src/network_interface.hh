@@ -1,6 +1,7 @@
 #pragma once
 
 #include <queue>
+#include <unordered_map>
 
 #include "address.hh"
 #include "ethernet_frame.hh"
@@ -81,4 +82,10 @@ private:
 
   // Datagrams that have been received
   std::queue<InternetDatagram> datagrams_received_ {};
+
+  // Datagrams that waiting for arp reply
+  std::unordered_map<uint32_t, std::pair<std::queue<InternetDatagram>, uint32_t>> datagrams_will_send_ {};
+
+  // Mapping from ip addr to eth addr
+  std::unordered_map<uint32_t, std::pair<EthernetAddress, uint32_t>> ip_to_eth_ {};
 };

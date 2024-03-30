@@ -38,8 +38,13 @@ void TCPSender::push( const TransmitFunction& transmit )
     msg.SYN = true;
   }
 
+  //当没有收到主动发出的第一次握手的syn报文段的响应之前不能发送数据
+  if (msg.SYN == false && abs_ackno_ == 0) {
+    return;
+  }
+
   msg.seqno = Wrap32::wrap( next_abs_send_pos_, isn_ );
-  uint64_t send_window_left_space = abs_ackno_ + recv_window_size_ - next_abs_send_pos_;
+  uint64_t send_window_left_space = abs_ackno_ + recv_window_size_ - next_abs_send_pos_ + (msg.SYN ? -1 : 0);
   uint64_t max_send_bytes_num
     = min( min( send_window_left_space, rd.bytes_buffered() ), TCPConfig::MAX_PAYLOAD_SIZE );
   if ( recv_window_size_ == 0 ) {
@@ -57,7 +62,7 @@ void TCPSender::push( const TransmitFunction& transmit )
   rd.pop( max_send_bytes_num );
   if ( rd.is_finished() && !fin_sended_ ) {
     if ( ( recv_window_size_ != 0 && send_window_left_space - max_send_bytes_num > 0 )
-         || ( recv_window_size_ == 0 && max_send_bytes_num == 0 ) ) {
+         || ( recv_window_size_ == 0 && msg.sequence_length() == 0 ) ) {
       msg.FIN = true;
       fin_sended_ = true;
     }
@@ -71,7 +76,7 @@ void TCPSender::push( const TransmitFunction& transmit )
       timer_.run();
     }
 
-    if ( send_window_left_space - msg.sequence_length() > 0 && rd.bytes_buffered() > 0 ) {
+    if ( send_window_left_space + (msg.SYN ? 1 : 0) - msg.sequence_length() > 0 && rd.bytes_buffered() > 0 ) {
       push( transmit );
     }
   }
